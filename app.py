@@ -2,8 +2,29 @@ import sqlite3
 import streamlit as st
 
 # Koneksi ke database
-conn = sqlite3.connect("store_management.db")
+conn = sqlite3.connect("store_management.db", check_same_thread=False)
 cursor = conn.cursor()
+
+# Pastikan tabel Product sudah ada
+def ensure_product_table():
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Product (
+            ProductID INTEGER PRIMARY KEY AUTOINCREMENT,
+            Merek TEXT NOT NULL,
+            Model TEXT NOT NULL,
+            Type TEXT NOT NULL,
+            Color TEXT,
+            Size TEXT,
+            Stok INTEGER NOT NULL,
+            HargaBeli REAL NOT NULL,
+            HargaJual REAL NOT NULL,
+            KodeSupplier TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+
+# Panggil fungsi untuk memastikan tabel
+ensure_product_table()
 
 # Fungsi untuk menambahkan data ke tabel
 def add_product(merek, model, tipe, color, size, stok, harga_beli, harga_jual, kode_supplier):
@@ -51,5 +72,7 @@ elif menu == "Lihat Produk":
     else:
         st.warning("Tidak ada data produk.")
 
-# Tutup koneksi database saat aplikasi selesai
-st.on_event("shutdown", lambda: conn.close())
+# Tutup koneksi database secara manual
+if st.sidebar.button("Tutup Aplikasi"):
+    conn.close()
+    st.sidebar.success("Koneksi database ditutup.")
