@@ -91,7 +91,7 @@ def add_product(merek, model, tipe, color, size, stok, harga_beli, harga_jual, k
     cursor.execute('''
         INSERT INTO Product (ProductID, Merek, Model, Type, Color, Size, Stok, HargaBeli, HargaJual, KodeSupplier)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (product_id, merek, model, tipe, color, size, stok, harga_beli, harga_jual, kode_supplier))
+    ''', (product_id, merek, model, tipe, color, size, int(stok), float(harga_beli), float(harga_jual), kode_supplier))
     conn.commit()
 
 # Streamlit Sidebar
@@ -167,9 +167,9 @@ elif menu == "Tambah Produk":
         tipe = st.text_input("Tipe")
         color = st.text_input("Warna")
         size = st.text_input("Ukuran")
-        stok = st.number_input("Stok", min_value=0, step=1)
-        harga_beli = st.number_input("Harga Beli", min_value=0.0, step=0.1)
-        harga_jual = st.number_input("Harga Jual", min_value=0.0, step=0.1)
+        stok = st.number_input("Stok", min_value=0, step=1, format="%d")
+        harga_beli = st.number_input("Harga Beli", min_value=0.0, step=0.1, format="%.2f")
+        harga_jual = st.number_input("Harga Jual", min_value=0.0, step=0.1, format="%.2f")
         kode_supplier = st.selectbox("Supplier", options=list(supplier_options.keys()))
 
         submitted = st.form_submit_button("Tambah")
