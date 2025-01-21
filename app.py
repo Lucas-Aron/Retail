@@ -56,6 +56,9 @@ ensure_employee_access_table()
 
 # Fungsi untuk mencatat akses karyawan
 def log_employee_access(employee_name):
+    if not employee_name:
+        raise ValueError("Nama karyawan tidak boleh kosong.")
+
     access_id = f"EMP-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     cursor.execute('''
         INSERT INTO EmployeeAccess (AccessID, EmployeeName)
@@ -104,8 +107,11 @@ if menu == "Akses Karyawan":
         submitted = st.form_submit_button("Catat Akses")
 
         if submitted:
-            log_employee_access(employee_name)
-            st.success(f"Akses berhasil dicatat untuk karyawan: {employee_name}")
+            try:
+                log_employee_access(employee_name)
+                st.success(f"Akses berhasil dicatat untuk karyawan: {employee_name}")
+            except ValueError as e:
+                st.error(str(e))
 
 # Halaman Riwayat Akses Karyawan
 elif menu == "Riwayat Akses Karyawan":
