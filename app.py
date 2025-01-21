@@ -1,6 +1,7 @@
 import sqlite3
 import streamlit as st
 from datetime import datetime
+import pandas as pd
 
 # Koneksi ke database
 conn = sqlite3.connect("store_management.db", check_same_thread=False)
@@ -110,8 +111,8 @@ elif menu == "Riwayat Akses Karyawan":
     access_logs = get_employee_access_log()
 
     if access_logs:
-        for log in access_logs:
-            st.write(f"**ID**: {log[0]} | **Nama Karyawan**: {log[1]} | **Waktu Akses**: {log[2]}")
+        df = pd.DataFrame(access_logs, columns=["ID", "Nama Karyawan", "Waktu Akses"])
+        st.table(df)
     else:
         st.warning("Belum ada riwayat akses karyawan.")
 
@@ -139,8 +140,8 @@ elif menu == "Lihat Supplier":
     rows = cursor.fetchall()
 
     if rows:
-        for row in rows:
-            st.write(f"**ID**: {row[0]} | **Nama**: {row[1]} | **Alamat**: {row[2]} | **Email**: {row[3]} | **Telepon**: {row[4]}")
+        df = pd.DataFrame(rows, columns=["ID", "Nama", "Alamat", "Email", "Telepon"])
+        st.table(df)
     else:
         st.warning("Tidak ada data supplier.")
 
@@ -177,8 +178,8 @@ elif menu == "Lihat Produk":
     rows = cursor.fetchall()
 
     if rows:
-        for row in rows:
-            st.write(f"**ID**: {row[0]} | **Merek**: {row[1]} | **Model**: {row[2]} | **Tipe**: {row[3]} | **Warna**: {row[4]} | **Ukuran**: {row[5]} | **Stok**: {row[6]} | **Harga Beli**: {row[7]} | **Harga Jual**: {row[8]} | **Kode Supplier**: {row[9]}")
+        df = pd.DataFrame(rows, columns=["ID", "Merek", "Model", "Tipe", "Warna", "Ukuran", "Stok", "Harga Beli", "Harga Jual", "Kode Supplier"])
+        st.table(df)
     else:
         st.warning("Tidak ada data produk.")
 
