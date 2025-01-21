@@ -96,7 +96,7 @@ def add_product(merek, model, tipe, color, size, stok, harga_beli, harga_jual, k
 
 # Streamlit Sidebar
 st.sidebar.title("Navigasi")
-menu = st.sidebar.radio("Menu", ["Akses Karyawan", "Tambah Produk", "Lihat Produk", "Tambah Supplier", "Lihat Supplier", "Riwayat Akses Karyawan"])
+menu = st.sidebar.radio("Menu", ["Akses Karyawan", "Tambah Produk", "Lihat Produk", "Tambah Supplier", "Lihat Supplier", "Riwayat Akses Karyawan", "Reset Data"])
 
 # Halaman Akses Karyawan
 if menu == "Akses Karyawan":
@@ -191,6 +191,23 @@ elif menu == "Lihat Produk":
         st.table(df)
     else:
         st.warning("Tidak ada data produk.")
+
+# Halaman Reset Data
+elif menu == "Reset Data":
+    st.title("Reset Data")
+    st.warning("Fitur ini akan menghapus semua data di dalam database!")
+
+    if st.button("Reset Database"):
+        try:
+            cursor.execute("DROP TABLE IF EXISTS Product")
+            cursor.execute("DROP TABLE IF EXISTS Supplier")
+            cursor.execute("DROP TABLE IF EXISTS EmployeeAccess")
+            ensure_product_table()
+            ensure_supplier_table()
+            ensure_employee_access_table()
+            st.success("Database berhasil direset.")
+        except Exception as e:
+            st.error(f"Terjadi kesalahan saat mereset database: {str(e)}")
 
 # Tutup koneksi database secara manual
 if st.sidebar.button("Tutup Aplikasi"):
