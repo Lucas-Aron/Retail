@@ -1,5 +1,6 @@
 import sqlite3
 import streamlit as st
+from datetime import datetime
 
 # Koneksi ke database
 conn = sqlite3.connect("store_management.db", check_same_thread=False)
@@ -36,9 +37,34 @@ def ensure_supplier_table():
     ''')
     conn.commit()
 
+# Pastikan tabel EmployeeAccess sudah ada
+def ensure_employee_access_table():
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS EmployeeAccess (
+            AccessID INTEGER PRIMARY KEY AUTOINCREMENT,
+            EmployeeName TEXT NOT NULL,
+            AccessTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+
 # Panggil fungsi untuk memastikan tabel
 ensure_product_table()
 ensure_supplier_table()
+ensure_employee_access_table()
+
+# Fungsi untuk mencatat akses karyawan
+def log_employee_access(employee_name):
+    cursor.execute('''
+        INSERT INTO EmployeeAccess (EmployeeName)
+        VALUES (?)
+    ''', (employee_name,))
+    conn.commit()
+
+# Fungsi untuk mendapatkan riwayat akses karyawan
+def get_employee_access_log():
+    cursor.execute("SELECT * FROM EmployeeAccess ORDER BY AccessTime DESC")
+    return cursor.fetchall()
 
 # Fungsi untuk menambahkan data ke tabel Supplier
 def add_supplier(nama, alamat, email, telepon):
@@ -63,10 +89,34 @@ def add_product(merek, model, tipe, color, size, stok, harga_beli, harga_jual, k
 
 # Streamlit Sidebar
 st.sidebar.title("Navigasi")
-menu = st.sidebar.radio("Menu", ["Tambah Produk", "Lihat Produk", "Tambah Supplier", "Lihat Supplier"])
+menu = st.sidebar.radio("Menu", ["Akses Karyawan", "Tambah Produk", "Lihat Produk", "Tambah Supplier", "Lihat Supplier", "Riwayat Akses Karyawan"])
+
+# Halaman Akses Karyawan
+if menu == "Akses Karyawan":
+    st.title("Akses Karyawan")
+
+    with st.form("form_employee_access"):
+        employee_name = st.text_input("Nama Karyawan")
+        submitted = st.form_submit_button("Catat Akses")
+
+        if submitted:
+            log_employee_access(employee_name)
+            st.success(f"Akses berhasil dicatat untuk karyawan: {employee_name}")
+
+# Halaman Riwayat Akses Karyawan
+elif menu == "Riwayat Akses Karyawan":
+    st.title("Riwayat Akses Karyawan")
+
+    access_logs = get_employee_access_log()
+
+    if access_logs:
+        for log in access_logs:
+            st.write(f"**ID**: {log[0]} | **Nama Karyawan**: {log[1]} | **Waktu Akses**: {log[2]}")
+    else:
+        st.warning("Belum ada riwayat akses karyawan.")
 
 # Halaman Tambah Supplier
-if menu == "Tambah Supplier":
+elif menu == "Tambah Supplier":
     st.title("Tambah Supplier Baru")
 
     with st.form("form_supplier"):
