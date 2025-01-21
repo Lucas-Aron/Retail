@@ -11,7 +11,7 @@ cursor = conn.cursor()
 def ensure_product_table():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Product (
-            ProductID INTEGER PRIMARY KEY AUTOINCREMENT,
+            ProductID TEXT PRIMARY KEY,
             Merek TEXT NOT NULL,
             Model TEXT NOT NULL,
             Type TEXT NOT NULL,
@@ -29,7 +29,7 @@ def ensure_product_table():
 def ensure_supplier_table():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Supplier (
-            SupplierID INTEGER PRIMARY KEY AUTOINCREMENT,
+            SupplierID TEXT PRIMARY KEY,
             NamaSupplier TEXT NOT NULL,
             AlamatSupplier TEXT NOT NULL,
             Email TEXT NOT NULL,
@@ -42,7 +42,7 @@ def ensure_supplier_table():
 def ensure_employee_access_table():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS EmployeeAccess (
-            AccessID INTEGER PRIMARY KEY AUTOINCREMENT,
+            AccessID TEXT PRIMARY KEY,
             EmployeeName TEXT NOT NULL,
             AccessTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
@@ -56,10 +56,11 @@ ensure_employee_access_table()
 
 # Fungsi untuk mencatat akses karyawan
 def log_employee_access(employee_name):
+    access_id = f"EMP-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     cursor.execute('''
-        INSERT INTO EmployeeAccess (EmployeeName)
-        VALUES (?)
-    ''', (employee_name,))
+        INSERT INTO EmployeeAccess (AccessID, EmployeeName)
+        VALUES (?, ?)
+    ''', (access_id, employee_name))
     conn.commit()
 
 # Fungsi untuk mendapatkan riwayat akses karyawan
@@ -69,10 +70,11 @@ def get_employee_access_log():
 
 # Fungsi untuk menambahkan data ke tabel Supplier
 def add_supplier(nama, alamat, email, telepon):
+    supplier_id = f"SUP-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     cursor.execute('''
-        INSERT INTO Supplier (NamaSupplier, AlamatSupplier, Email, NomorTelepon)
-        VALUES (?, ?, ?, ?)
-    ''', (nama, alamat, email, telepon))
+        INSERT INTO Supplier (SupplierID, NamaSupplier, AlamatSupplier, Email, NomorTelepon)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (supplier_id, nama, alamat, email, telepon))
     conn.commit()
 
 # Fungsi untuk mendapatkan daftar supplier
@@ -82,10 +84,11 @@ def get_suppliers():
 
 # Fungsi untuk menambahkan data ke tabel Product
 def add_product(merek, model, tipe, color, size, stok, harga_beli, harga_jual, kode_supplier):
+    product_id = f"PROD-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     cursor.execute('''
-        INSERT INTO Product (Merek, Model, Type, Color, Size, Stok, HargaBeli, HargaJual, KodeSupplier)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (merek, model, tipe, color, size, stok, harga_beli, harga_jual, kode_supplier))
+        INSERT INTO Product (ProductID, Merek, Model, Type, Color, Size, Stok, HargaBeli, HargaJual, KodeSupplier)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (product_id, merek, model, tipe, color, size, stok, harga_beli, harga_jual, kode_supplier))
     conn.commit()
 
 # Streamlit Sidebar
