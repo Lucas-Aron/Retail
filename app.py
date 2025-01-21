@@ -77,7 +77,7 @@ def add_supplier(nama, alamat, email, telepon):
     cursor.execute('''
         INSERT INTO Supplier (SupplierID, NamaSupplier, AlamatSupplier, Email, NomorTelepon)
         VALUES (?, ?, ?, ?, ?)
-    ''', (supplier_id, nama, alamat, email, telepon))
+    ''', (supplier_id, nama, alamat, email, str(telepon)))
     conn.commit()
 
 # Fungsi untuk mendapatkan daftar supplier
